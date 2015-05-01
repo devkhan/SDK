@@ -7,9 +7,11 @@ import json
 from bson.objectid import ObjectId
 from flask import Flask, Blueprint, render_template, request, jsonify
 from werkzeug.datastructures import ImmutableMultiDict
-from user import model as user_model
+from sdk.user import model as user_model
 from . import model as biodb_model
-from utils import validate_oid
+
+from sdk.utils import validate_oid
+
 
 biodb = Blueprint('biodb', __name__, template_folder='templates')
 
@@ -37,7 +39,7 @@ def add():
 
 @biodb.route('/software', methods = ['GET'])
 def gets():
-    return render_template('software.html')
+    return render_template('index.html')
 
 @biodb.route('/software/<oid>', methods = ['GET'])
 @validate_oid

@@ -6,7 +6,7 @@
 from bson.objectid import ObjectId
 
 # Local imports
-import utils
+from sdk import utils
 
 
 class Software(object):

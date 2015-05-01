@@ -1,8 +1,15 @@
 """
 The flask application package.
 """
+from flask import Flask, render_template, request, jsonify
 
-from flask import Flask
+import json
+from sdk.user import usr
+from sdk.biodb import biodb
+from . import config
+
 app = Flask(__name__)
 
-import sdk.views
+
+app.register_blueprint(biodb, url_prefix = '/db')
+app.register_blueprint(usr, url_prefix = '/usr')

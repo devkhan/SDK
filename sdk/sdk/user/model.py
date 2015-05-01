@@ -14,7 +14,7 @@ from functools import wraps
 from flask import request, jsonify
 
 # Local imports
-import utils
+import sdk.utils
 
 class Instance(object):
     """

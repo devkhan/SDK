@@ -3,7 +3,7 @@
 #.--. .-. ... .... -. - ... .-.-.- .. -.
 
 from pymongo import MongoClient
-from config import config
+from sdk.config import config
 from flask import jsonify
 from bson.objectid import ObjectId
 import json
