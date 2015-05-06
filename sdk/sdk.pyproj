@@ -55,6 +55,7 @@
     <Content Include="sdk\static\content\bootstrap.css" />
     <Content Include="sdk\static\content\bootstrap.min.css" />
     <Content Include="sdk\static\content\site.css" />
+    <Content Include="sdk\static\content\styles.css" />
     <Content Include="sdk\static\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="sdk\static\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="sdk\static\fonts\glyphicons-halflings-regular.ttf" />
@@ -75,10 +76,12 @@
     <Content Include="sdk\static\scripts\respond.min.js" />
     <Content Include="sdk\static\scripts\_references.js" />
     <Content Include="sdk\templates\about.html" />
+    <Content Include="sdk\templates\cell.html" />
     <Content Include="sdk\templates\contact.html" />
     <Content Include="sdk\templates\index.html" />
     <Content Include="sdk\templates\layout.html" />
     <Content Include="sdk\*" />
+    <Content Include="sdk\templates\search.html" />
     <Content Include="sdk\user\blacklist.json" />
     <Content Include="sdk\user\templates\base.html" />
     <Content Include="sdk\user\__pycache__\model.cpython-34.pyc" />

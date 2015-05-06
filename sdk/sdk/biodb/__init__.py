@@ -19,35 +19,51 @@ biodb = Blueprint('biodb', __name__, template_folder='templates')
 def get():
     return "Test"
 
-@biodb.route('/software/add', methods = ['POST'])
+@biodb.route('/add', methods = ['POST'])
 def add():
     # Get form data as an ImmutableMultiDict.
     sw=request.form
-    if biodb_model.Manage().add(sw.get('software_name', type=str), sw.get('tags', type=str).split(','), sw.get('primary_link', type=str), sw.get('one_liner', type=str), True if sw.get('paid', type=str) == 'P' else False):
-        response = {
-            'status' : 'ok',
-            'message' : 'hello there'
-        }
-        return jsonify(response), 200
-    else:
-        response = {
-            'status' : 'not ok',
-            'message': 'not working'
-        }
-        return jsonify(response), 200
+    #if biodb_model.Manage().add(sw.get('software_name', type=str), sw.get('tags', type=str).split(','), sw.get('primary_link', type=str), sw.get('one_liner', type=str), True if sw.get('paid', type=str) == 'P' else False):
+    #    response = {
+    #        'status' : 'ok',
+    #        'message' : 'hello there'
+    #    }
+    #    return jsonify(response), 200
+    #else:
+    #    response = {
+    #        'status' : 'not ok',
+    #        'message': 'not working'
+    #    }
+    #    return jsonify(response), 200
 
 
-@biodb.route('/software', methods = ['GET'])
+@biodb.route('/cell', methods = ['GET'])
 def gets():
     return render_template('index.html')
 
-@biodb.route('/software/<oid>', methods = ['GET'])
+@biodb.route('/cell/<oid>', methods = ['GET'])
 @validate_oid
-def get_software_detail(oid):
-    sw = biodb_model.Software(oid)
-    return render_template('software.html', oid=sw.oid, software_name=sw.name, added_date="100000 BC", primary_link=sw.link, tags=['one','two','three'], person=sw.person, primary_ref=sw.ref, one_liner=sw.one_liner, paid=sw.paid, remarks=sw.remarks)
+def get_cell_detail(oid):
+    cell = biodb_model.Cell(oid)
+    cell_dict = {
+        "Cell Name: ": cell.name,
+        "Location: ": cell.location,
+        "Shape: ": cell.shape,
+        "Dimensions: ": cell.dimensions,
+        "Function: ": cell.function,
+        "Comments: ": cell.comments,
+        "Image: ": "<img src=\"" + str(cell.imageURL) + "\"/>"
+        }
+        #"Comments about dimension: ": cell.dimensionComments,        
+    return render_template('cell.html', cell_dict=cell_dict)
 
-@biodb.route('/software/<sw_id>', methods = ['POST'])
+@biodb.route('/cell/<c_id>', methods = ['POST'])
 def update_software_detail(sw_id):
 
     pass
+
+@biodb.route('/search/<query_string>', methods=['POST'])
+def search_query(query_string):
+    """Renders the search page with results based on the search query"""
+    results = { "results": biodb_model.Manage().search(query_string) }
+    return jsonify(results), 200

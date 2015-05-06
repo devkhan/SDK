@@ -3,9 +3,11 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template
+from flask import render_template, request, jsonify
 from sdk import app
+from sdk.biodb import model as biodb_model
 
+from sdk.utils import validate_oid
 
 import json
 
@@ -40,3 +42,9 @@ def about():
         year=datetime.now().year,
         message='Your application description page.'
     )
+
+@app.route('/search', methods=['GET'])
+def search():
+    # Search home page.
+    return render_template('search.html', title='Search', year=datetime.now().year)
+

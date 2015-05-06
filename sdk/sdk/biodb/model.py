@@ -4,14 +4,16 @@
 
 # Global imports
 from bson.objectid import ObjectId
+from bson import json_util
 
+import json
 # Local imports
 from sdk import utils
 
 
-class Software(object):
-    def __init__(self, sw_id):
-        inst = utils.Database().biodb.find_one({"_id": ObjectId(sw_id)})
+class Cell(object):
+    def __init__(self, c_id):
+        inst = utils.Database().biodb.find_one({"_id": ObjectId(c_id)})
         self.k = False
 
         if inst is not None:
@@ -24,53 +26,68 @@ class Software(object):
 
     @property
     def name(self):
-        return self._meta['software_name'] if self.k is True else None
+        return self._meta['cell_name'] if self.k is True else None
 
     @property
     def tags(self):
         return self._meta['tags'] if self.k is True else None
 
     @property
-    def link(self):
-        return self._meta['primary_link'] if self.k is True else None
+    def location(self):
+        return self._meta['location'] if self.k is True else None
 
     @property
-    def one_liner(self):
-        return self._meta['one_liner'] if self.k is True else None
+    def shape(self):
+        return self._meta['shape'] if self.k is True else None
 
     @property
-    def paid(self):
-        return self._meta['paid'] if self.k is True else None
+    def dimensions(self):
+        return self._meta['dimension'] if self.k is True else None
 
     @property
-    def ref(self):
-        return self._meta['primary_ref'] if self.k is True else None
+    def dimensionComments(self):
+        return (self._meta['dimensionComment'], None)[self.k]
 
     @property
-    def remarks(self):
-        return self._meta['remarks'] if self.k is True else None
+    def function(self):
+        return (self._meta['function'], None)[self.k]
 
     @property
-    def meta(self):
-        return self._meta['meta'] if self.k is True else None
+    def imageURL(self):
+        return (self._meta['image_url'], '#')[self.k]
 
     @property
-    def person(self):
-        return self._meta['person'] if self.k is True else None
-    
+    def inferences(self):
+        return (self._meta['inferences'], None)[self.k]
+
+    @property
+    def polarityIndex(self):
+        return (self._meta['polarity_index'], None)[self.k]
+
+    @property
+    def sourceLink(self):
+        return (self._meta['link_of_source'], None)[self.k]
+
+    @property
+    def comments(self):
+        return (self._meta['comments'], None)[self.k]
 
     @property
     def hash(self):
         return {
             "oid": self.oid,
-            "software_name": self.name,
+            "cell_name": self.name,
             "tags": self.tags,
-            "primary_link": self.link,
-            "one_liner": self.one_liner,
-            "paid": self.paid,
-            "primary_ref": self.ref,
-            "remarks": self.remarks,
-            "meta": self.meta
+            "location": self.location,
+            "shape": self.shape,
+            "dimensions": self.dimensions,
+            "dimensionComments": self.dimensionComments,
+            "function": self.function,
+            "imageURL": self.imageURL,
+            "inferences": self.inferences,
+            "polarityIndex": self.polarityIndex,
+            "sourceLink": self.sourceLink,
+            "comments": self.comments
         }
 
 class Manage(object):
@@ -105,9 +122,9 @@ class Manage(object):
 
         return False
 
-    def delete(self, software_id):
+    def delete(self, cell_id):
         "Deletes a software from Database."
-        return utils.Database().biodb.remove({"_id": ObjectId(software_id)})['n'] > 0
+        return utils.Database().biodb.remove({"_id": ObjectId(cell_id)})['n'] > 0
 
     def update(
         self,
@@ -148,6 +165,11 @@ class Manage(object):
             return True
 
         return False
+
+    def search(self, query_string):
+        results = utils.Database().biodb.find({"cell_name":{"$regex": query_string}})
+        serialized_results = [json.dumps(result, default=json_util.default, separators=(',', ':')) for result in results]
+        return serialized_results
 
 class Feed(object):
     def create(page = 0, tags = None):

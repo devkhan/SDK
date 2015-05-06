@@ -1,0 +1,58 @@
+﻿{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="row jumbotron">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <div class="input-group">
+            <input id="searchBox" type="text" class="form-control" placeholder="Search for...">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" onclick="searchQuery()">Go!</button>
+            </span>
+        </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
+    <div class="col-md-3"></div>
+</div>
+
+<div class="row">
+    <table class="table" id="cells_table">
+        <thead>
+            <tr>
+                <td>Property: </td>
+                <td>Value</td>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+    function searchQuery()
+    {
+        $.ajax({
+            url: "../db/search/" + document.getElementById('searchBox').value,
+            type: "POST",
+            contentType: "application/x-www-form-urlencoded",
+            data: {},
+            dataType: "json",
+            success: searchResults
+        });
+    }
+
+    function searchResults(responseData)
+    {
+        var tableHTML = '';
+        $.each(responseData.results, function (i, item)
+        {
+            item = $.parseJSON(item);
+            tableHTML += '<div class="jumbotron row"><tr><td>Cell Name: </td><td><a href="../db/cell/' + item._id.str + '">' + item.cell_name + '</a></td></tr>' + '</div>';
+        });
+        $('#cells_table').append(tableHTML);
+    }
+</script>
+
+{% endblock %}

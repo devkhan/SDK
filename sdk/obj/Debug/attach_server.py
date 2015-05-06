@@ -17,6 +17,7 @@ __all__ = ['enable_attach', 'wait_for_attach', 'break_into_debugger', 'settrace'
 import atexit
 import getpass
 import os
+import os.path
 import platform
 import socket
 import struct
@@ -67,9 +68,9 @@ from ptvsd.visualstudio_py_util import to_bytes, read_bytes, read_int, read_stri
 #   is assumed to be using the normal PTVS REPL protocol. If not successful (which can happen if there is
 #   no debugger attached), the server responds with 'RJCT' and closes the connection. 
 
-PTVS_VER = '2.1'
+PTVS_VER = '2.2'
 DEFAULT_PORT = 5678
-PTVSDBG_VER = 4 # must be kept in sync with DebuggerProtocolVersion in PythonRemoteProcess.cs
+PTVSDBG_VER = 5 # must be kept in sync with DebuggerProtocolVersion in PythonRemoteProcess.cs
 PTVSDBG = to_bytes('PTVSDBG')
 ACPT = to_bytes('ACPT')
 RJCT = to_bytes('RJCT')
@@ -79,7 +80,7 @@ REPL = to_bytes('REPL')
 
 _attach_enabled = False
 _attached = threading.Event()
-vspd.DONT_DEBUG.append(__file__)
+vspd.DONT_DEBUG.append(os.path.normcase(__file__))
 
 
 class AttachAlreadyEnabledError(Exception):
