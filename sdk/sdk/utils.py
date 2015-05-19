@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from sdk.config import config
 from flask import jsonify
 from bson.objectid import ObjectId
-import json
+import json, requests
 
 class Database:
     """
@@ -41,3 +41,20 @@ def validate_oid(func):
             return func(oid, *args, **kwargs)
         return jsonify({'errors': True, 'msg': "Invalid OID"}), 400
     return wrapper
+
+def retrieve_uniprot_id(geneid):
+    try:
+        req = requests.get(config['MYGENE_URL']+'query?q=' + geneid)
+        json_object = req.json()
+        req = requests.get(config['MYGENE_URL']+'gene/'+str(json_object['hits'][0]['entrezgene'])+'?fields=uniprot')
+        json_object = req.json()
+        return str(json_object['uniprot']['Swiss-Prot'])
+    except:
+        return False
+
+def get_fasta_seq(gene_id):
+    try:
+        req = requests.get(config['UNIPROT_URL']+retrieve_uniprot_id(gene_id)+'.fasta')
+        return req.text
+    except:
+        return False

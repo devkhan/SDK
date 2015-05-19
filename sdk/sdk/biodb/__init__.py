@@ -10,7 +10,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 from sdk.user import model as user_model
 from . import model as biodb_model
 
-from sdk.utils import validate_oid
+from sdk.utils import validate_oid, get_fasta_seq
 
 
 biodb = Blueprint('biodb', __name__, template_folder='templates')
@@ -52,7 +52,8 @@ def get_cell_detail(oid):
         "Dimensions: ": cell.dimensions,
         "Function: ": cell.function,
         "Comments: ": cell.comments,
-        "Image: ": "<img src=\"" + str(cell.imageURL) + "\"/>"
+        "Image: ": "<img src=\"" + str(cell.imageURL) + "\"/>",
+        "Fasta Sequence: ": get_fasta_seq("ANK1")
         }
         #"Comments about dimension: ": cell.dimensionComments,        
     return render_template('cell.html', cell_dict=cell_dict)

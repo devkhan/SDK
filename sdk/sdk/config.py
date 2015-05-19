@@ -5,5 +5,7 @@ config = {
     'HOST': os.getenv('OPENSHIFT_NODEJS_IP', 'localhost'),
     'MONGODB_URL':  os.getenv('OPENSHIFT_MONGODB_DB_URL', 'mongodb://localhost:27017/'),
     'Database': "sdk",
-    'DEBUG': True
+    'DEBUG': True,
+    'MYGENE_URL': "http://mygene.info/v2/",
+    'UNIPROT_URL': "http://uniprot.org/uniprot/"
 }

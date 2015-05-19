@@ -48,8 +48,12 @@
         var tableHTML = '';
         $.each(responseData.results, function (i, item)
         {
+            console.log(item);
             item = $.parseJSON(item);
-            tableHTML += '<div class="jumbotron row"><tr><td>Cell Name: </td><td><a href="../db/cell/' + item._id.str + '">' + item.cell_name + '</a></td></tr>' + '</div>';
+            tableHTML += '<div class="jumbotron row">' +
+                '<tr><td>Cell Name: </td><td><a href="../db/cell/' + item._id.$oid + '">' + item.cell_name + '</a></td></tr>' + '<br />' +
+                '<tr><td>Function: </td><td>' + item.function + '</td></tr>' +
+                '</div>';
         });
         $('#cells_table').append(tableHTML);
     }

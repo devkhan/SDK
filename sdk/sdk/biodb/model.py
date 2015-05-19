@@ -169,6 +169,8 @@ class Manage(object):
     def search(self, query_string):
         results = utils.Database().biodb.find({"cell_name":{"$regex": query_string}})
         serialized_results = [json.dumps(result, default=json_util.default, separators=(',', ':')) for result in results]
+        results = utils.Database().biodb.find({"function":{"$regex": query_string}})
+        serialized_results = [json.dumps(result, default=json_util.default, separators=(',', ':')) for result in results]
         return serialized_results
 
 class Feed(object):
