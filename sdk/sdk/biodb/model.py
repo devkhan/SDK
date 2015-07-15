@@ -166,12 +166,20 @@ class Manage(object):
 
         return False
 
-    def search(self, query_string):
+    def search(self, query_string, field):
         results = utils.Database().biodb.find({"cell_name":{"$regex": query_string}})
         serialized_results = [json.dumps(result, default=json_util.default, separators=(',', ':')) for result in results]
         results = utils.Database().biodb.find({"function":{"$regex": query_string}})
         serialized_results = [json.dumps(result, default=json_util.default, separators=(',', ':')) for result in results]
         return serialized_results
+
+    def searchField(self, field):
+        results = utils.Database().biodb.find()
+        if field == "cell_name":
+            results = utils.Database().biodb.find({"cell_name": query_string})
+        if field == "function":
+            results = utils.Database().biodb.find({"function": query_string})
+        return results
 
 class Feed(object):
     def create(page = 0, tags = None):
