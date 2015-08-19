@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <!--[if lt IE 7]> <html class="lt-ie9 lt-ie8 lt-ie7" lang="en-US"> <![endif]-->
 <!--[if IE 7]>    <html class="lt-ie9 lt-ie8" lang="en-US"> <![endif]-->
 <!--[if IE 8]>    <html class="lt-ie9" lang="en-US"> <![endif]-->
@@ -83,15 +83,15 @@
 				</div>
 				<!-- End of Search Wrapper -->
 				<!-- Start of search results -->
-				<div class="row">
-					<table class="table" id="cells_table">
+				<div class="row searchable">
+					<!--<table class="table" id="cells_table">
 						<thead>
 							<tr>
 								<td>Property: </td>
 								<td>Value</td>
 							</tr>
 						</thead>
-					</table>
+					</table>-->
 				</div>
 				<!-- End of search results -->
 				<!-- Start of Page Container -->
@@ -298,38 +298,68 @@
 				<script type='text/javascript' src="static/js/jquery-twitterFetcher.js"></script>
 				<script type='text/javascript' src='static/js/custom.js'></script>
 				<script type="text/javascript">
-					$('form').submit(false);
-
-					function searchQuery() {
-						console.log("Search term: " + document.getElementById('searchBox').value);
-						$.ajax({
-							url: "../db/search/" + document.getElementById('searchBox').value,
-							type: "POST",
-							contentType: "application/x-www-form-urlencoded",
-							data: {},
-							dataType: "json",
-							success: searchResults
+					(function ($) {
+						$.extend($.expr[':'], {
+							'containsi': function (elem, i, match, array) {
+								return $(elem).text().toLowerCase()
+								  .indexOf((match[3] || "").toLowerCase()) >= 0;
+							}
 						});
-					}
 
-					function searchResults(responseData) {
-						console.log("Response: " + responseData);
-						var tableHTML = '';
-						$.each(responseData.results, function(i, item) {
-							console.log(item);
-							item = $.parseJSON(item);
-							tableHTML += '<div class="jumbotron row">' + 
-										'<tr><td>Cell Name: </td><td><a href="../db/cell/' + 
-										item._id.$oid + 
-										'">' + 
-										item.cell_name + 
-										'</a></td></tr>' + 
-										'<br />' + 
-										'<tr><td>Function: </td><td>' + 
-										item.function+'</td></tr>' + '</div>';
+						var Search = function (block) {
+							this.callbacks = {};
+							block(this);
+						}
+
+						Search.prototype.all = function (fn) { this.callbacks.all = fn; }
+						Search.prototype.reset = function (fn) { this.callbacks.reset = fn; }
+						Search.prototype.empty = function (fn) { this.callbacks.empty = fn; }
+						Search.prototype.results = function (fn) { this.callbacks.results = fn; }
+
+						function query(selector) {
+							if (val = this.val()) {
+								return $(selector + ':containsi("' + val + '")');
+							} else {
+								return false;
+							}
+						}
+
+						$.fn.search = function search(selector, block) {
+							var search = new Search(block);
+							var callbacks = search.callbacks;
+
+							function perform() {
+								if (result = query.call($(this), selector)) {
+									callbacks.all && callbacks.all.call(this, result);
+									var method = result.size() > 0 ? 'results' : 'empty';
+									return callbacks[method] && callbacks[method].call(this, result);
+								} else {
+									callbacks.all && callbacks.all.call(this, $(selector));
+									return callbacks.reset && callbacks.reset.call(this);
+								};
+							}
+
+							$(this).on('keypress', perform);
+							$(this).on('keydown', perform);
+							$(this).on('keyup', perform);
+							$(this).on('blur', perform);
+						}
+					})(jQuery);
+
+					$('input[id="searchBox"]').search('.searchable', function (on) {
+						on.reset(function () {
+							$('.searchable').show();
 						});
-						$('#cells_table').append(tableHTML);
-					}
+
+						on.empty(function () {
+							$('#empty-message').show();
+						});
+
+						on.results(function (results) {
+							$('.searchable').hide();
+							results.show();
+						});
+					});
 				</script>
 			</body>
 		</html>
