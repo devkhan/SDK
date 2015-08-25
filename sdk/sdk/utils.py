@@ -33,7 +33,7 @@ class Database:
         """
         Returns the biodb Database collection
         """
-        return self.db['cell']
+        return self.db['cells']
 
 def validate_oid(func):
     def wrapper(oid, *args, **kwargs):
