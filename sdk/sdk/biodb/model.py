@@ -6,7 +6,7 @@
 from bson.objectid import ObjectId
 from bson import json_util
 
-import json
+import json, re
 # Local imports
 from sdk import utils
 
@@ -23,6 +23,10 @@ class Cell(object):
     @property
     def oid(self):
         return str(self._meta['_id']) if self.k is True else 0x000000000000000000000000
+
+    @property
+    def cell_id(self):
+        return self._meta['cell_name'] if self.k is True else 0
 
     @property
     def name(self):
@@ -73,22 +77,34 @@ class Cell(object):
         return (self._meta['comments'], None)[self.k]
 
     @property
+    def size(self):
+        return (self._meta['comments'], None)[self.k]
+
+    @property
     def hash(self):
         return {
-            "oid": self.oid,
-            "cell_name": self.name,
-            "tags": self.tags,
-            "location": self.location,
-            "shape": self.shape,
-            "dimensions": self.dimensions,
-            "dimensionComments": self.dimensionComments,
-            "function": self.function,
-            "imageURL": self.imageURL,
-            "inferences": self.inferences,
-            "polarityIndex": self.polarityIndex,
-            "sourceLink": self.sourceLink,
-            "comments": self.comments
-        }
+			"oid": self.oid,
+			"cell_name": self.name,
+			"location": self.location,
+			"size": self.size,
+			"function": self.function,
+			"image_url": self.sourceLink
+		}
+        #return {
+        #    "oid": self.oid,
+        #    "cell_name": self.name,
+        #    "tags": self.tags,
+        #    "location": self.location,
+        #    "shape": self.shape,
+        #    "dimensions": self.dimensions,
+        #    "dimensionComments": self.dimensionComments,
+        #    "function": self.function,
+        #    "imageURL": self.imageURL,
+        #    "inferences": self.inferences,
+        #    "polarityIndex": self.polarityIndex,
+        #    "sourceLink": self.sourceLink,
+        #    "comments": self.comments
+        #}
 
 class Manage(object):
     def add(self, software_name, tags, primary_link, one_liner, paid, primary_ref = "N.A", remarks = "N.A", meta = None):
@@ -167,10 +183,12 @@ class Manage(object):
         return False
 
     def search(self, query_string, field):
-        results = utils.Database().biodb.find({"cell_name":{"$regex": query_string}})
+        results = utils.Database().biodb.find({"cell_name":re.compile(query_string, re.IGNORECASE)})
         serialized_results = [json.dumps(result, default=json_util.default, separators=(',', ':')) for result in results]
-        results = utils.Database().biodb.find({"function":{"$regex": query_string}})
-        serialized_results = [json.dumps(result, default=json_util.default, separators=(',', ':')) for result in results]
+        results = utils.Database().biodb.find({"function":re.compile(query_string, re.IGNORECASE)})
+        serialized_results += [json.dumps(result, default=json_util.default, separators=(',', ':')) for result in results]
+        results = utils.Database().biodb.find({"location":re.compile(query_string, re.IGNORECASE)})
+        
         return serialized_results
 
     def searchField(self, field):

@@ -67,7 +67,7 @@ def update_software_detail(sw_id):
 
 	pass
 
-@biodb.route('/search/<query_string>', methods=['POST'])
+@biodb.route('/search/<query_string>', methods=['POST','GET'])
 def search_query(query_string):
 	"""Renders the search page with results based on the search query"""
 	field = request.args.get('field', 'cell_name')
